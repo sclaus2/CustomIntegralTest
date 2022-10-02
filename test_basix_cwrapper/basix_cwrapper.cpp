@@ -51,15 +51,24 @@ basix_table* basix_element_tabulate(const basix_element *element, const double* 
     //Allocate memory for basis_table 
     basix_table* table = (basix_table*) malloc(sizeof(basix_table));
 
-    //Return: take generated data and assign it to tbl_shape and values
+    //Create table to be returned
     table->shape = (long unsigned int*)malloc(shape.size()*sizeof(long unsigned int));
     table->values = (double*)malloc(tab_data.size()*sizeof(double)); 
 
     table->shape_size = shape.size();
-    table->shape = shape.data();
     table->value_size = tab_data.size();
-    table->values = tab_data.data();
-    
+
+    //FIXME: I would like to use x.data() to not copy values 
+    // but it creates erratic behavior as random numbers appear sometimes
+    //table->shape = shape.data();
+    //table->values = tab_data.data();
+
+    for(int i=0;i<shape.size();i++)
+        table->shape[i] = shape[i];
+
+    for(int i=0;i<tab_data.size();i++)
+        table->values[i] = tab_data[i];
+
     return table;
 }
 

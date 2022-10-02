@@ -25,11 +25,15 @@ basix_table* table = basix_element_tabulate(element, points, num_points, nd);
 
 int i = 0;
 printf("table_values=[");
-for (i = 0; i < table->value_size; ++i)
+for (i = 0; i < table->value_size; i++)
 {
     printf("%f, ", table->values[i]);
 }
 printf("]\n ");
+
+//Free memory 
+basix_element_destroy(element);
+basix_table_destroy(table);
 
 return 0;
 }
