@@ -15,49 +15,50 @@ basix_element* element = basix_element_create(basix_family, basix_cell_type, deg
 
 double points[10] = {0.0, 0.0, 0.1, 0.1, 0.2, 0.3, 0.3, 0.6, 0.4, 1.0};
 unsigned int num_points = 5;
-int nd = 0; 
+int nd = 1; 
 
-basix_table* table = basix_element_tabulate(element, points, num_points, nd);
+//Calculate shape
+int shape[4]; 
+basix_element_tabulate_shape(element, num_points, nd, shape);
+
+double table[shape[0]][shape[1]][shape[2]][shape[3]];
+int table_size = shape[0]*shape[1]*shape[2]*shape[3]; 
+
+basix_element_tabulate(element, points, num_points, nd, (double*) table, table_size);
 
 int i = 0;
 printf("table_shape=[");
-for (i = 0; i < table->shape_size; i++)
+for (i = 0; i < 4 ; i++)
 {
-    printf("%ld, ", table->shape[i]);
+    printf("%d, ", shape[i]);
 }
 printf("]\n ");
 
-printf("table_values=[");
-for (i = 0; i < table->value_size; i++)
+printf("table=[");
+for (i = 0; i < shape[0]; i++)
 {
-    printf("%f, ", table->values[i]);
+    for (int j = 0; j < shape[1]; j++)
+    {
+        for (int k = 0; k < shape[2]; k++)
+        {
+            for (int l = 0; l < shape[3]; l++)
+            {
+                printf("%f, ", table[i][j][k][l]);
+            }
+        }
+    }
 }
 printf("]\n ");
 
-printf("Tabulate data (0, 0, :, 0): [ ");
-for(i = 0; i < table->shape[2]; ++i)
-{
-    int index = shape_index(0, 0, i, 0, table->shape);
-    printf("%f ", table->values[index]);
-}
-printf("]\n");
-
-double table_test[1][5][3][1];
-int table_test_size = 1*5*3*1; 
-
-tabulate_element(element, points,num_points, nd, (double*) table_test, table_test_size);
-
-
-printf("table_values=[");
+printf("table_slice=[");
 for (i = 0; i < 3; i++)
 {
-    printf("%f, ", table_test[0][0][i][0]);
+    printf("%f, ", table[0][0][i][0]);
 }
 printf("]\n ");
 
 //Free memory 
 basix_element_destroy(element);
-basix_table_destroy(table);
 
 return 0;
 }

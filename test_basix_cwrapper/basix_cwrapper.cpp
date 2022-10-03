@@ -29,8 +29,8 @@ void basix_element_destroy(basix_element *element)
     free(element);
 }
 
-basix_table* basix_element_tabulate(const basix_element *element, const double* points,
-                            const unsigned int num_points, const int nd)
+void basix_element_tabulate_shape(const basix_element *element, const unsigned int num_points, 
+                                  const int nd, int* cshape)
 {
     //Specify which element is needed
     basix::element::family family = static_cast<basix::element::family>(element->basix_family); 
@@ -44,48 +44,14 @@ basix_table* basix_element_tabulate(const basix_element *element, const double* 
 
     //Determine shape of tabulated values to allocate sufficient memory 
     std::array<std::size_t, 4> shape = finite_element.tabulate_shape(nd, num_points);
-    //@todo create another C API function that takes in the shape as argument 
-    unsigned int tab_data_size = shape[0]*shape[1]*shape[2]*shape[3]; 
-
-    basix_table* table = (basix_table*) malloc(sizeof(basix_table));
-    table->value_size = tab_data_size;
-    table->shape_size = shape.size();
-    table->values = (double*)malloc(tab_data_size*sizeof(double)); 
-    table->shape = (long unsigned int*)malloc(shape.size()*sizeof(long unsigned int));
 
     //Copy shape values 
-    std::copy(shape.begin(),shape.end(),table->shape);
-
-    //Create span views on points and table values
-    std::span<const double> points_view{points,num_points*gdim};
-    std::span<double> basis{table->values, tab_data_size};
-    std::array<std::size_t, 2> xshape{num_points,gdim};
-    
-    finite_element.tabulate(nd, points_view, {num_points, gdim}, basis);
-
-    return table;
+    std::copy(shape.begin(),shape.end(),cshape);
 }
 
-void basix_table_destroy(basix_table *table)
-{
-    if (table != NULL) {
-        free(table->shape);
-        free(table->values);
-        free(table);
-    }
-}
-
-//@todo: Is there a way to make this better, e.g. create 4 dimensional array in basix table? 
-// (remark: this seems to be challenging in terms of memory management)
-int shape_index(int i, int j, int k, int l, long unsigned int* shape)
-{
-   int index = i + j * shape[0] + k * shape[0] * shape[1] + l * shape[0] * shape[1] * shape[2];
-   return index;
-}
-
-void tabulate_element(const basix_element *element, const double* points,
-                      const unsigned int num_points, const int nd, 
-                      double* table_data, int table_data_size)
+void basix_element_tabulate(const basix_element *element, const double* points,
+                            const unsigned int num_points, const int nd, 
+                            double* table_data, long unsigned int table_data_size)
 {
      //Specify which element is needed
     basix::element::family family = static_cast<basix::element::family>(element->basix_family); 

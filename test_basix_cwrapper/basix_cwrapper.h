@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-//FIXME: Could this be replaced by ufcx_finite_element? 
+//@todo Could this be replaced by ufcx_finite_element? 
 // The following int values indicate the position of the values in the corresponding 
 // enum classes in basix
 typedef struct basix_element
@@ -38,32 +38,18 @@ typedef struct basix_element
   int gdim;
 } basix_element;
 
-typedef struct basix_table
-{
-  long unsigned int* shape;
-  int shape_size;
-  double* values;
-  int value_size;
-} basix_table;
-
 basix_element* basix_element_create(const int basix_family, const int basix_cell_type, const int degree, 
                                     const int lagrange_variant, const int dpc_variant, const bool discontinuous, 
                                     const unsigned int gdim);
 
 void basix_element_destroy(basix_element *element);
 
-basix_table* basix_element_tabulate(const basix_element *element, const double* points,
-                            const unsigned int num_points, const int nd); 
+void basix_element_tabulate(const basix_element *element, const double* points,
+                            const unsigned int num_points, const int nd, 
+                            double* table_data, long unsigned int table_data_size);
 
-void tabulate_element(const basix_element *element, const double* points,
-                      const unsigned int num_points, const int nd, 
-                      double* table_data, int table_data_size);
-
-void basix_table_destroy(basix_table *table);
-
-int shape_index(int i, int j, int k, int l, long unsigned int* shape);
-
-void test(double* table_data);
+void basix_element_tabulate_shape(const basix_element *element, const unsigned int num_points, 
+                                  const int nd, int* cshape);
 
 // //Redefine enums necessary for basix element creation
 // typedef enum basix_element_lagrange_variant
