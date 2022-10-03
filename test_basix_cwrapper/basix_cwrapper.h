@@ -1,8 +1,8 @@
 /**
  * cwrapper.h
  *
- * Declares a simple C API wrapper around a C++ class.
- * This is a file written in C++ 
+ * Declares a simple C API wrapper around C++.
+ * 
  */
 
 #ifndef BASIX_CWRAPPER_H_
@@ -10,21 +10,60 @@
 
 #include <stdbool.h>
 
-//FIXME: the dependency on the definition in ufcx.h means 
-// that this wrapper cannot be a clean part of basix. 
-// This means this wrapper would have to be treated in the same way as ufcx.h (being a part of ffcx which has a dependency on basix)
-// Alternatively structures like ufcx_finite_element need to be reproduced here
-//#include <ufcx.h>
-
-// Pointer to this incomplete type used in C code
-typedef struct CBasixFiniteElement CBasixFiniteElement; 
-
 #ifdef __cplusplus
 // extern C indicates to C++ compiler that the following code 
 // is meant to be called by a C compiler 
 // i.e. tells the compiler that C naming conventions etc should be used
 extern "C" {
 #endif
+
+//FIXME: Could this be replaced by ufcx_finite_element? 
+// The following int values indicate the position of the values in the corresponding 
+// enum classes in basix
+typedef struct basix_element
+{    
+  /// Basix identifier of the family 
+  int basix_family;
+  /// Basix identifier of the cell type
+  int basix_cell_type;
+  /// Polynomial degree 
+  int degree;
+  /// The Lagrange variant to be passed to Basix's create_element function
+  int lagrange_variant;
+  /// The DPC variant to be passed to Basix's create_element function
+  int dpc_variant;
+  /// Indicates whether or not this is the discontinuous version of the element
+  bool discontinuous;
+  //The geometric dimension
+  int gdim;
+} basix_element;
+
+typedef struct basix_table
+{
+  long unsigned int* shape;
+  int shape_size;
+  double* values;
+  int value_size;
+} basix_table;
+
+basix_element* basix_element_create(const int basix_family, const int basix_cell_type, const int degree, 
+                                    const int lagrange_variant, const int dpc_variant, const bool discontinuous, 
+                                    const unsigned int gdim);
+
+void basix_element_destroy(basix_element *element);
+
+basix_table* basix_element_tabulate(const basix_element *element, const double* points,
+                            const unsigned int num_points, const int nd); 
+
+void tabulate_element(const basix_element *element, const double* points,
+                      const unsigned int num_points, const int nd, 
+                      double* table_data, int table_data_size);
+
+void basix_table_destroy(basix_table *table);
+
+int shape_index(int i, int j, int k, int l, long unsigned int* shape);
+
+void test(double* table_data);
 
 // //Redefine enums necessary for basix element creation
 // typedef enum basix_element_lagrange_variant
@@ -85,52 +124,6 @@ extern "C" {
 //   prism = 6,
 //   pyramid = 7
 // } basix_cell_type;
-
-
-//FIXME: Could this be replaced by ufcx_finite_element? 
-// The following int values indicate the position of the values in the corresponding 
-// enum classes in basix
-typedef struct basix_element
-{    
-  /// Basix identifier of the family 
-  int basix_family;
-  /// Basix identifier of the cell type
-  int basix_cell_type;
-  /// Polynomial degree 
-  int degree;
-  /// The Lagrange variant to be passed to Basix's create_element function
-  int lagrange_variant;
-  /// The DPC variant to be passed to Basix's create_element function
-  int dpc_variant;
-  /// Indicates whether or not this is the discontinuous version of the element
-  bool discontinuous;
-  //The geometric dimension
-  int gdim;
-} basix_element;
-
-typedef struct basix_table
-{
-  long unsigned int* shape;
-  int shape_size;
-  double* values;
-  int value_size;
-} basix_table;
-
-basix_element* basix_element_create(const int basix_family, const int basix_cell_type, const int degree, 
-                                    const int lagrange_variant, const int dpc_variant, const bool discontinuous, 
-                                    const unsigned int gdim);
-
-void basix_element_destroy(basix_element *element);
-
-basix_table* basix_element_tabulate(const basix_element *element, const double* points, const unsigned int num_points, const int nd);
-
-void basix_table_destroy(basix_table *table);
-
-// CBasixFiniteElement* basix_finite_element_create(basix_element_family cfamily, basix_cell_type ccell_type, int k, basix_element_lagrange_variant cvariant);
-
-// void basix_finite_element_destroy(CBasixFiniteElement* c);
-
-// void basix_finite_element_methods(CBasixFiniteElement* c);
 
 #ifdef __cplusplus
 }

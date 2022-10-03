@@ -19,8 +19,8 @@ int main(int argc, char* argv[])
   // Create a degree 4 Lagrange element on a quadrilateral
   // For Lagrange elements, we use `basix::element::family::P`.
   auto family = basix::element::family::P;
-  auto cell_type = basix::cell::type::quadrilateral;
-  int k = 3;
+  auto cell_type = basix::cell::type::triangle;
+  int k = 1;
 
   // For Lagrange elements, we must provide and extra argument: the Lagrange
   // variant. In this example, we use the equispaced variant: this will place
@@ -32,8 +32,8 @@ int main(int argc, char* argv[])
       = basix::create_element(family, cell_type, k, variant);
 
   // Get the number of degrees of freedom for the element
-  int dofs = lagrange.dim();
-  assert(dofs == (k + 1) * (k + 1));
+  // int dofs = lagrange.dim();
+  // assert(dofs == (k + 1) * (k + 1));
 
   // Create a set of points, and tabulate the basis functions
   // of the Lagrange element at these points.
@@ -45,6 +45,11 @@ int main(int argc, char* argv[])
   std::cout << "Tabulate data shape: [ ";
   for (auto s : shape)
     std::cout << s << " ";
+  std::cout << "]" << std::endl;
+
+  std::cout << "Tabulate data: [ ";
+  for (std::size_t i = 0; i < tab_data.size(); ++i)
+    std::cout << tab_data[i] << " ";
   std::cout << "]" << std::endl;
 
   cmdspan4_t tab(tab_data.data(), shape);
