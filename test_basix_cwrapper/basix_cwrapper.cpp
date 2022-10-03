@@ -68,7 +68,7 @@ void basix_element_tabulate(const basix_element *element, const double* points,
     std::span<double> basis{table_data, table_data_size};
     std::array<std::size_t, 2> xshape{num_points,gdim};
     
-    finite_element.tabulate(nd, points_view, {num_points, gdim}, basis);
+    finite_element.tabulate(nd, points_view, xshape, basis);
 }
 
 }
