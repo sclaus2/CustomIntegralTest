@@ -1,5 +1,8 @@
-//Wrapping C++ class into C 
-// This defines the functions listed in cwrapper.h 
+// Copyright (c) 2022 Susanne Claus
+// FEniCS Project
+// SPDX-License-Identifier:    MIT
+
+// This file defines the C-API functions listed in cwrapper.h 
 // This is a C++ file that defines C calls 
 #include <basix/finite-element.h>
 #include <basix/cell.h>
@@ -36,11 +39,13 @@ void basix_element_tabulate_shape(const basix_element *element, const unsigned i
     basix::element::family family = static_cast<basix::element::family>(element->basix_family); 
     basix::cell::type cell_type = static_cast<basix::cell::type>(element->basix_cell_type); 
     int k = element->degree;
-    std::size_t gdim = element->gdim;
     basix::element::lagrange_variant lvariant = static_cast<basix::element::lagrange_variant>(element->lagrange_variant);
+    basix::element::dpc_variant dvariant = static_cast<basix::element::dpc_variant>(element->dpc_variant);
+
+    std::size_t gdim = element->gdim;
 
     //Create C++ basix element object
-    basix::FiniteElement finite_element = basix::create_element(family, cell_type, k, lvariant);
+    basix::FiniteElement finite_element = basix::create_element(family, cell_type, k, lvariant,dvariant,element->discontinuous);
 
     //Determine shape of tabulated values to allocate sufficient memory 
     std::array<std::size_t, 4> shape = finite_element.tabulate_shape(nd, num_points);

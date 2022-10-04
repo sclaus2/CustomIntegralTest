@@ -1,5 +1,8 @@
-//Wrapping C++ class into C 
-// This defines the functions listed in cwrapper.h 
+// Copyright (c) 2022 Susanne Claus
+// FEniCS Project
+// SPDX-License-Identifier:    MIT
+
+// This file defines the C-API functions listed in cwrapper.h 
 // This is a C++ file that defines C calls 
 #include <basix/finite-element.h>
 #include <basix/cell.h>

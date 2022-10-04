@@ -15,7 +15,7 @@ basix_element* element = basix_element_create(basix_family, basix_cell_type, deg
 
 double points[10] = {0.0, 0.0, 0.1, 0.1, 0.2, 0.3, 0.3, 0.6, 0.4, 1.0};
 unsigned int num_points = 5;
-int nd = 1; 
+int nd = 0; 
 
 //Calculate shape
 int shape[4]; 
